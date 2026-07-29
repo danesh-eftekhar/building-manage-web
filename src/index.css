@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+* {
+  box-sizing: border-box;
+  font-family: "Vazirmatn", sans-serif;
+}
+
+body {
+  margin: 0;
+  direction: rtl;
+}
