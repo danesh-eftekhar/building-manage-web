@@ -4,6 +4,9 @@ export const authApi = {
   login: (mobile: string, password: string) =>
     api.post('/Auth/login', { mobile, password }),
 
+  verifyLoginOtp: (tempToken: string, code: string) =>
+    api.post('/Auth/login/verify-otp', { tempToken, code }),
+
   register: (data: any) =>
     api.post('/Auth/register', data),
 
@@ -15,7 +18,4 @@ export const authApi = {
 
   refreshToken: (refreshToken: string) =>
     api.post('/Auth/token/refresh', { refreshToken }),
-
-  getMySubscription: () =>
-    api.get('/Plans/my-subscription'),
 }

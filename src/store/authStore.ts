@@ -9,18 +9,40 @@ interface User {
   refreshToken: string
 }
 
+interface Subscription {
+  planName: string
+  planType: number
+  status: number
+  endDate: string
+  features: {
+    hasReports: boolean
+    hasApi: boolean
+    maxBuildings: number
+    maxUnitsPerBuilding: number
+  }
+}
+
 interface AuthStore {
   user: User | null
+  subscription: Subscription | null
   isAuthenticated: boolean
+  isPro: boolean
   login: (user: User) => void
   logout: () => void
+  setSubscription: (sub: Subscription) => void
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
   user: localStorage.getItem('user')
     ? JSON.parse(localStorage.getItem('user')!)
     : null,
+  subscription: localStorage.getItem('subscription')
+    ? JSON.parse(localStorage.getItem('subscription')!)
+    : null,
   isAuthenticated: !!localStorage.getItem('token'),
+  isPro: localStorage.getItem('subscription')
+    ? JSON.parse(localStorage.getItem('subscription')!).planType > 1
+    : false,
 
   login: (user) => {
     localStorage.setItem('token', user.token)
@@ -31,6 +53,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
   logout: () => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
-    set({ user: null, isAuthenticated: false })
+    localStorage.removeItem('subscription')
+    set({ user: null, subscription: null, isAuthenticated: false, isPro: false })
+  },
+
+  setSubscription: (sub) => {
+    localStorage.setItem('subscription', JSON.stringify(sub))
+    set({ subscription: sub, isPro: sub.planType > 1 })
   },
 }))

@@ -1,10 +1,20 @@
+import { useEffect } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { useAuthStore } from "../../store/authStore";
 import { Toaster } from "react-hot-toast";
+import { authApi } from "../../api/auth";
 
 export default function MainLayout() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const { isAuthenticated, setSubscription } = useAuthStore();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      authApi.getMySubscription()
+        .then((res) => setSubscription(res.data))
+        .catch(() => {});
+    }
+  }, [isAuthenticated]);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;

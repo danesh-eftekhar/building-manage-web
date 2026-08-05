@@ -8,6 +8,7 @@ import UnitsPage from "./pages/units/UnitsPage";
 import ResidentsPage from "./pages/residents/ResidentsPage";
 import ChargesPage from "./pages/charges/ChargesPage";
 import MaintenancePage from "./pages/maintenance/MaintenancePage";
+import RegisterPage from "./pages/auth/RegisterPage";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
       <Toaster position="top-center" />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />

@@ -1,8 +1,54 @@
-﻿import { useState } from "react";
+﻿# ==================================================================
+# update-login-frontend.ps1
+# این رو از ریشه پروژه فرانت اجرا کن: C:\Projects\building-manage-web
+# ==================================================================
+
+$ErrorActionPreference = "Stop"
+
+function Write-Step($msg) { Write-Host ""; Write-Host "=== $msg ===" -ForegroundColor Cyan }
+
+# بکاپ از فایل‌های فعلی
+Write-Step "بکاپ گرفتن"
+Copy-Item "src\api\auth.ts" "src\api\auth.ts.bak" -Force
+Copy-Item "src\pages\auth\LoginPage.tsx" "src\pages\auth\LoginPage.tsx.bak" -Force
+
+# ------------------------------------------------------------------
+# آپدیت auth.ts — اضافه شدن verifyLoginOtp
+# ------------------------------------------------------------------
+Write-Step "آپدیت auth.ts"
+@'
+import api from './axios'
+
+export const authApi = {
+  login: (mobile: string, password: string) =>
+    api.post('/Auth/login', { mobile, password }),
+
+  verifyLoginOtp: (tempToken: string, code: string) =>
+    api.post('/Auth/login/verify-otp', { tempToken, code }),
+
+  register: (data: any) =>
+    api.post('/Auth/register', data),
+
+  sendOtp: (mobile: string) =>
+    api.post('/Auth/otp/send', { mobile }),
+
+  verifyOtp: (mobile: string, code: string) =>
+    api.post('/Auth/otp/verify', { mobile, code }),
+
+  refreshToken: (refreshToken: string) =>
+    api.post('/Auth/token/refresh', { refreshToken }),
+}
+'@ | Set-Content "src\api\auth.ts" -Encoding UTF8
+
+# ------------------------------------------------------------------
+# آپدیت LoginPage.tsx — مرحله ۲ از "کد پیامکی" به "کد Google Authenticator"
+# ------------------------------------------------------------------
+Write-Step "آپدیت LoginPage.tsx"
+@'
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authApi } from "../../api/auth";
 import { useAuthStore } from "../../store/authStore";
-import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 
 type Step = "credentials" | "otp";
@@ -180,10 +226,6 @@ export default function LoginPage() {
                   >
                     {loading ? "در حال بررسی..." : "ورود"}
                   </button>
-                  <p className="text-center text-gray-500 text-sm mt-4">
-                    حساب ندارید؟{" "}
-                    <Link to="/register" className="text-blue-600 font-semibold hover:underline">ثبت نام</Link>
-                  </p>
                 </form>
               </>
             ) : (
@@ -222,7 +264,6 @@ export default function LoginPage() {
                   >
                     {loading ? "در حال تایید..." : "ورود به سیستم"}
                   </button>
-
                 </form>
               </>
             )}
@@ -237,3 +278,9 @@ export default function LoginPage() {
     </div>
   );
 }
+'@ | Set-Content "src\pages\auth\LoginPage.tsx" -Encoding UTF8
+
+Write-Step "تمام شد"
+Write-Host "دو فایل آپدیت شدن (بکاپ .bak کنارشون هست)." -ForegroundColor Green
+Write-Host "حالا dev server رو ری‌استارت کن (اگه در حال اجراست، معمولا خودش hot-reload می‌کنه):"
+Write-Host "  npm run dev"

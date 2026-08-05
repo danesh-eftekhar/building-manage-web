@@ -1,4 +1,4 @@
-﻿import api from './axios'
+import api from './axios'
 
 export const authApi = {
   login: (mobile: string, password: string) =>
@@ -15,7 +15,4 @@ export const authApi = {
 
   refreshToken: (refreshToken: string) =>
     api.post('/Auth/token/refresh', { refreshToken }),
-
-  getMySubscription: () =>
-    api.get('/Plans/my-subscription'),
 }
